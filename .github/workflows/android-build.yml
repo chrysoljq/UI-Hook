@@ -1,0 +1,59 @@
+name: Android CI Build
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    name: Build APK (${{ matrix.abi }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        abi: [universal, arm64-v8a, armeabi-v7a, x86_64, x86]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Configure local.properties (sdk.dir)
+        shell: bash
+        run: |
+          echo "sdk.dir=${ANDROID_SDK_ROOT}" > local.properties
+
+      - name: Build Debug APK
+        shell: bash
+        run: |
+          chmod +x ./gradlew
+          if [[ "${{ matrix.abi }}" == "universal" ]]; then
+            ./gradlew :app:assembleDebug --stacktrace
+          else
+            ./gradlew :app:assembleDebug -Pabi=${{ matrix.abi }} --stacktrace
+          fi
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk-${{ matrix.abi }}
+          if-no-files-found: error
+          path: |
+            app/build/outputs/apk/debug/*.apk

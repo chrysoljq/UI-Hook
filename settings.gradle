@@ -22,6 +22,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "LsposedModuleTemplate"
+rootProject.name = "UiTreeHook"
 include ":app"
  

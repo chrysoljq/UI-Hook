@@ -5,17 +5,28 @@ plugins {
 apply plugin: 'com.yanzhenjie.andserver'
 
 android {
-    namespace = "com.example.lsposedmoduletemplate"
+    namespace = "com.example.uitreehook"
     compileSdk = 34
 
     defaultConfig {
-        applicationId "com.example.lsposedmoduletemplate"
+        applicationId "com.example.uitreehook"
         minSdk 24
         targetSdk 34
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // Optional: build per-ABI APKs in CI via `-Pabi=arm64-v8a` (or `-Pabi=arm64-v8a,armeabi-v7a`).
+        def abiProp = project.findProperty("abi")?.toString()?.trim()
+        if (abiProp && abiProp != "universal") {
+            def abiFiltersList = abiProp.split(",").collect { it.trim() }.findAll { it }
+            if (!abiFiltersList.isEmpty()) {
+                ndk {
+                    abiFilters(*abiFiltersList)
+                }
+            }
+        }
     }
 
     buildTypes {

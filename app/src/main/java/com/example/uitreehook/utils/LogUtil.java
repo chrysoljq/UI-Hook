@@ -1,4 +1,4 @@
-package com.example.lsposedmoduletemplate.utils;
+package com.example.uitreehook.utils;
 
 import android.util.Log;
 
@@ -10,7 +10,7 @@ import de.robv.android.xposed.XposedBridge;
 
 public class LogUtil {
 
-    private static String logTag = "LSPosedModuleTemplate" + "_LSP_TAG";
+    private static String logTag = "UiTreeHook" + "_LSP_TAG";
     private static boolean existsXposedBridge = true;
 
     static {
